@@ -1,6 +1,10 @@
+> [!NOTE]
+> DISCLAIMER: Hice el fork y le pedi a claude que cambiara el codigo para traducir de ingles a español. VIBE CODING!!!!
+
+
 # PDF Translator
 
-Este proyecto consiste en un script de Python que permite traducir el texto de un archivo PDF escaneado de portugués a español utilizando OCR (Reconocimiento Óptico de Caracteres) y la API de traducción de Google.
+Este proyecto consiste en un script de Python que permite traducir el texto de un archivo PDF escaneado de ingles a español utilizando OCR (Reconocimiento Óptico de Caracteres) y la API de traducción de Google.
 
 ## Requisitos
 

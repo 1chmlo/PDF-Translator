@@ -13,7 +13,8 @@ def convert_pdf_to_image(file, start_page, end_page):
     return images
 
 def ocr_core(image):
-    text = pytesseract.image_to_string(image, lang='por')
+    # Configurado para detectar texto en inglés
+    text = pytesseract.image_to_string(image, lang='eng')
     return text
 
 def translate_text(text, src_lang, dest_lang):
@@ -36,7 +37,8 @@ def save_to_pdf(pages, output_file):
                 y = 750  
             c.drawString(100, y, line)
             y -= 15  
-        y -= 20 
+        c.showPage()  # Aseguramos que cada página original se convierte en una página en el PDF
+        y = 750  # Reiniciamos la posición para la siguiente página
     c.save()
 
 # Solicitar al usuario que introduzca el nombre del archivo PDF a traducir
@@ -50,11 +52,11 @@ file_path = f"./{file_name}"
 # Convertir el PDF en una imagen
 images = convert_pdf_to_image(file_path, start_page, end_page)
 
-# Traducir el texto por página de portugués a español
+# Traducir el texto por página de inglés a español
 translated_pages = []
 for image in images:
     extracted_text = ocr_core(image)
-    translated_text = translate_text(extracted_text, 'pt', 'es') 
+    translated_text = translate_text(extracted_text, 'en', 'es') 
     
     if translated_text is not None:
         translated_lines = translated_text.split('\n')
@@ -67,3 +69,5 @@ output_file = input('Por favor, introduce el nombre del archivo de salida: ')
 
 # Guardar el texto traducido en un nuevo documento PDF
 save_to_pdf(translated_pages, output_file)
+
+print(f"¡Listo! Se ha creado el archivo {output_file} con la traducción.")

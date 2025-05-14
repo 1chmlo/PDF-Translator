@@ -12,7 +12,7 @@ def convert_pdf_to_image(file, start_page, end_page):
 
 def ocr_core(image):
     # Configurado para detectar texto en inglés
-    text = pytesseract.image_to_string(image, lang='eng')
+    text = pytesseract.image_to_string(image, lang='spa')
     return text
 
 def save_to_pdf(pages, output_file):

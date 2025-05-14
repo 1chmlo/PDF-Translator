@@ -1,23 +1,22 @@
 import cv2
 from PIL import Image
 import pytesseract
-from googletrans import Translator
-from fpdf import FPDF
 from pdf2image import convert_from_path
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
+from googletrans import Translator
 
 def convert_pdf_to_image(file, start_page, end_page):
     images = convert_from_path(file, first_page=start_page, last_page=end_page)
     return images
 
 def ocr_core(image):
-    # Configurado para detectar texto en inglés
-    text = pytesseract.image_to_string(image, lang='eng')
+    # Configurado para detectar texto en español
+    text = pytesseract.image_to_string(image, lang='spa')
     return text
 
-def translate_text(text, src_lang, dest_lang):
+def translate_text(text, src_lang='es', dest_lang='en'):
     translator = Translator()
     try:
         translation = translator.translate(text, src=src_lang, dest=dest_lang)
@@ -41,33 +40,37 @@ def save_to_pdf(pages, output_file):
         y = 750  # Reiniciamos la posición para la siguiente página
     c.save()
 
-# Solicitar al usuario que introduzca el nombre del archivo PDF a traducir
-file_name = input('Por favor, introduce el nombre del archivo PDF a traducir (debe estar en la misma carpeta que este script): ')
+# Solicitar al usuario que introduzca el nombre del archivo PDF a procesar
+file_name = input('Por favor, introduce el nombre del archivo PDF escaneado a convertir (debe estar en la misma carpeta que este script): ')
 start_page = int(input('Por favor, introduce la página de inicio: '))
 end_page = int(input('Por favor, introduce la página de fin: '))
 
 # Asumir que el archivo está en la misma carpeta que el script
 file_path = f"./{file_name}"
 
-# Convertir el PDF en una imagen
+# Convertir el PDF en imágenes
 images = convert_pdf_to_image(file_path, start_page, end_page)
 
-# Traducir el texto por página de inglés a español
+# Extraer el texto por página mediante OCR y traducirlo de español a inglés
 translated_pages = []
 for image in images:
     extracted_text = ocr_core(image)
-    translated_text = translate_text(extracted_text, 'en', 'es') 
     
-    if translated_text is not None:
-        translated_lines = translated_text.split('\n')
-        translated_pages.append(translated_lines)
+    if extracted_text:
+        # Traducir el texto extraído de español a inglés
+        translated_text = translate_text(extracted_text, 'es', 'en')
+        if translated_text:
+            translated_lines = translated_text.split('\n')
+            translated_pages.append(translated_lines)
+        else:
+            print("No se pudo traducir el texto extraído")
     else:
-        print("No se pudo traducir el texto de la imagen")
+        print("No se pudo reconocer texto en la imagen")
 
 # Solicitar al usuario que introduzca el nombre del archivo de salida
-output_file = input('Por favor, introduce el nombre del archivo de salida: ')
+output_file = input('Por favor, introduce el nombre del archivo de salida (PDF con texto traducido): ')
 
 # Guardar el texto traducido en un nuevo documento PDF
 save_to_pdf(translated_pages, output_file)
 
-print(f"¡Listo! Se ha creado el archivo {output_file} con la traducción.")
+print(f"¡Listo! Se ha creado el archivo {output_file} con el texto traducido del español al inglés.")
